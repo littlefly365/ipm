@@ -48,7 +48,7 @@ LD=ld                    \
 --disable-multilib       \
 --disable-bootstrap      \
 --disable-fixincludes    \
---with-system-zlib >> /dev/null 2>&1
+--with-system-zlib 
 
 echo "starting build"
 clear
