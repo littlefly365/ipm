@@ -1,0 +1,49 @@
+#!/usr/bin/bash
+
+PKG_NAME="binutils"
+PKG_VERSION="2.45"
+PKG_URL="https://mirrors.ocf.berkeley.edu/gnu/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_MD5="b861b092bf1af683c46a8aa2e689a6fd"
+
+rm -rf $PKG_NAME-$PKG_VERSION
+
+if [[ -f "$PKG_NAME-$PKG_VERSION.tar.xz" ]]; then
+   TEST_MD5=$(md5sum "$PKG_NAME-$PKG_VERSION.tar.xz" | awk '{print $1}')
+   if [[ "$TEST_MD5" == "$PKG_MD5" ]]; then
+      echo "md5 check pass"
+   else
+      echo "md5 dont match"
+      wget $PKG_URL
+      if [[ "$TEST_MD5" == "$PKG_MD5" ]]; then
+      echo "md5 check pass"
+      fi
+    fi
+else
+    "downloading $PKG_NAME source code"
+     wget $PKG_URL
+     TEST_MD5=$(md5sum "$PKG_NAME-$PKG_VERSION.tar.xz" | awk '{print $1}')
+     if [[ "$TEST_MD5" == "$PKG_MD5" ]]; then
+     echo "md5 check pass"
+fi
+
+tar xf $PKG_NAME-$PKG_VERSION.tar.xz
+cd $PKG_NAME-$PKG_VERSION
+
+mkdir -p $PKG_NAME-build && cd $PKG_NAME-build
+
+echo "applying settings for build"
+../configure --prefix=/usr       \
+             --sysconfdir=/etc   \
+             --enable-ld=default \
+             --enable-plugins    \
+             --enable-shared     \
+             --disable-werror    \
+             --enable-64-bit-bfd \
+             --enable-new-dtags  \
+             --with-system-zlib  \
+             --enable-default-hash-style=gnu
+echo "starting build"
+clear
+echo "this may take some time"
+
+make -j$(nproc)
