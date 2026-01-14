@@ -2,7 +2,7 @@
 
 PKG_NAME="gcc"
 PKG_VERSION="15.2.0"
-PKG_URL="https://mirrors.ocf.berkeley.edu/gnu/gcc/$PKG_NAME-$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="https://ftp.gnu.org/gnu/gcc/gcc-15.2.0/gcc-15.2.0.tar.xz"
 PKG_MD5="b861b092bf1af683c46a8aa2e689a6fd"
 
 rm -rf $PKG_NAME-$PKG_VERSION
@@ -48,10 +48,14 @@ LD=ld                    \
 --disable-multilib       \
 --disable-bootstrap      \
 --disable-fixincludes    \
---with-system-zlib 
+--with-system-zlib  && make -j$(nproc)
 
-echo "starting build"
-clear
-echo "this may take some time"
-
-make -j$(nproc)
+make install
+chown -v -R root:root \
+/usr/lib/gcc/$(gcc -dumpmachine)/15.2.0/include{,-fixed}
+ln -svr /usr/bin/cpp /usr/lib
+ln -sv gcc.1 /usr/share/man/man1/cc.1
+ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/15.2.0/liblto_plugin.so \
+        /usr/lib/bfd-plugins/
+mkdir -pv /usr/share/gdb/auto-load/usr/lib
+mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
