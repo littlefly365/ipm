@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+  
+PKG_NAME="dash"
+PKG_VERSION="0.5.12"
+PKG_URL="http://gondor.apana.org.au/~herbert/dash/files/dash-0.5.12.tar.gz"
+PKG_MD5="57222b768b84003ea4b801e5d5e0e52b"
+
+rm -rf $PKG_NAME-$PKG_VERSION
+
+if [[ -f "$PKG_NAME-$PKG_VERSION.tar.gz" ]]; then
+   TEST_MD5=$(md5sum "$PKG_NAME-$PKG_VERSION.tar.gz" | awk '{print $1}')
+   if [[ "$TEST_MD5" == "$PKG_MD5" ]]; then
+      echo "md5 check pass"
+   else
+      echo "md5 dont match"
+      wget $PKG_URL
+      if [[ "$TEST_MD5" == "$PKG_MD5" ]]; then
+      echo "md5 check pass"
+      fi
+    fi
+else
+    "downloading $PKG_NAME source code"
+     wget $PKG_URL
+     TEST_MD5=$(md5sum "$PKG_NAME-$PKG_VERSION.tar.gz" | awk '{print $1}')
+     if [[ "$TEST_MD5" == "$PKG_MD5" ]]; then
+     echo "md5 check pass"
+fi
+
+tar xf $PKG_NAME-$PKG_VERSION.tar.gz
+cd $PKG_NAME-$PKG_VERSION
+./configure --bindir=/bin --mandir=/usr/share/man &&
+make -j$(nproc)
+make install
+
+cat >> /etc/shells << "EOF"
+/bin/dash
+EOF
