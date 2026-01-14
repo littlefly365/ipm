@@ -2,8 +2,8 @@
 
 PKG_NAME="binutils"
 PKG_VERSION="2.45"
-PKG_URL="https://mirrors.ocf.berkeley.edu/gnu/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_MD5="b861b092bf1af683c46a8aa2e689a6fd"
+PKG_URL="https://sourceware.org/pub/binutils/releases/binutils-2.45.tar.xz"
+PKG_MD5="dee5b4267e0305a99a3c9d6131f45759"
 
 rm -rf $PKG_NAME-$PKG_VERSION
 
@@ -41,9 +41,7 @@ echo "applying settings for build"
              --enable-64-bit-bfd \
              --enable-new-dtags  \
              --with-system-zlib  \
-             --enable-default-hash-style=gnu
-echo "starting build"
-clear
-echo "this may take some time"
-
-make -j$(nproc)
+             --enable-default-hash-style=gnu && make tooldir=/usr -j$(nproc)
+make tooldir=/usr install
+rm -rfv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a \
+        /usr/share/doc/gprofng/
